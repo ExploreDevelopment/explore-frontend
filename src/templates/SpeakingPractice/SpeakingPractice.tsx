@@ -9,26 +9,32 @@ import Chat from './ChatLayout';
 
 const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API_KEY as string, dangerouslyAllowBrowser: true });
 
-const GPT_INSTRUCTION = `Analyze the provided conversation in JSON format.
+const GPT_INSTRUCTION = `Act as a proofreading expert. Analyze the provided conversation in JSON format.
 
 CONTEXT:
 ***
-Your task is to analyze the array of messages that form the dialogue between an AI agent and a user. An AI agent asks questions, and the user provides answers to them. Messages of the user may contain mistakes. 
+Your task is to analyze the array of messages that form the dialogue between an AI agent and a user. An AI agent asks questions, and the user provides answers to them. Messages of the user may contain mistakes.
+
+The conversation reflects **spoken language**, so messages should be evaluated with flexibility. Do not enforce strict written grammar rules if the phrase is natural in speech.
 ***
 
 TASK:
 ***
-For user answers, identify and highlight this types of mistake:
-grammar,
-stylistic,
-tone of voice or
-contextual mistakes in each message.
+For each user message, identify and highlight only these types of mistakes:
+- **Grammar mistakes** (only if they make the message unclear or unnatural in spoken form)
+- **Stylistic issues** (awkward phrasing that would not be natural in spoken English)
+- **Tone and contextual appropriateness** (formal/informal mismatches, word choice that sounds unnatural in speech)
 
-Consider these messages as spoken language. Never identify and highlight punctuation and spelling mistakes and never correct any of those mistakes.
+⚠️ **Special Considerations for Spoken Language:
+- **Do NOT correct casual contractions** (e.g., "gonna", "wanna", "ain’t"—unless they sound unnatural in context).
+- **Do NOT enforce strict written grammar** if the phrase is common in speech (e.g., "Me and my friend went" is acceptable in casual talk, but "Me went" is not).
+- **Ignore filler words and repetitions** (e.g., "uh", "you know", "so").
+- **Do NOT correct punctuation, spelling, or typos (e.g. "i" instead of "I", "days" instead of "day's").**
 
-For each mistake, provide an explanation in the same message. Output that message inside parentheses () immediately after mistaken word or phrase. Wrap the corrected mistakes and explanation with <span> tags. 
-
-The output should contain all messages with "role": "agent" without any modifications.
+📝 **Output Formatting:**
+- Wrap mistakes and their explanations inside \`<span>\` tags.
+- Provide explanations in parentheses () **immediately after** the mistake.
+- Preserve all agent messages exactly as they are, without modifications. Always include them in the result.
 ***
 `;
 
