@@ -24,7 +24,7 @@ stylistic,
 tone of voice or
 contextual mistakes in each message.
 
-Never identify and highlight punctuation and spelling mistakes and never correct any of those mistakes.
+Consider these messages as spoken language. Never identify and highlight punctuation and spelling mistakes and never correct any of those mistakes.
 
 For each mistake, provide an explanation in the same message. Output that message inside parentheses () immediately after mistaken word or phrase. Wrap the corrected mistakes and explanation with <span> tags. 
 
