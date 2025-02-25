@@ -26,7 +26,7 @@ For each user message, identify and highlight only these types of mistakes:
 - **Tone and contextual appropriateness** (formal/informal mismatches, word choice that sounds unnatural in speech)
 
 ⚠️ **Special Considerations for Spoken Language:
-- **Do NOT correct casual contractions** (e.g., "gonna", "wanna", "ain’t"—unless they sound unnatural in context).
+- **Do NOT correct casual contractions** (e.g., "gonna", "wanna", "ain't"—unless they sound unnatural in context).
 - **Do NOT enforce strict written grammar** if the phrase is common in speech (e.g., "Me and my friend went" is acceptable in casual talk, but "Me went" is not).
 - **Ignore filler words and repetitions** (e.g., "uh", "you know", "so").
 - **Do NOT correct punctuation, spelling, or typos (e.g. "i" instead of "I", "days" instead of "day's").**
@@ -76,14 +76,41 @@ const SpeakingPractice: React.FC<{ open: boolean; onClose: () => void }> = ({ op
   };
 
   const getMessages = async () => {
-    const response = await fetch(`https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`, {
-      method: 'GET',
-      headers: {
-        'xi-api-key': import.meta.env.VITE_ELEVENLABS_API_KEY as string,
-      },
-    });
+    const maxRetries = 10;
+    const baseDelay = 1000; // 1 second
 
-    return response.json();
+    for (let attempt = 0; attempt < maxRetries; attempt += 1) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const response = await fetch(`https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`, {
+          method: 'GET',
+          headers: {
+            'xi-api-key': import.meta.env.VITE_ELEVENLABS_API_KEY as string,
+          },
+        });
+
+        if (response.status === 404) {
+          const delay = baseDelay * 2 ** attempt; // Exponential backoff
+          console.log(`Attempt ${attempt + 1} failed with 404, retrying in ${delay}ms...`);
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise(resolve => {
+            setTimeout(resolve, delay);
+          });
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+
+        // eslint-disable-next-line no-await-in-loop
+        return await response.json();
+      } catch (error) {
+        if (attempt === maxRetries - 1) {
+          console.log(error);
+          throw new Error(`Failed to get messages after ${maxRetries} attempts`);
+        }
+      }
+    }
+
+    throw new Error(`Failed to get messages after ${maxRetries} attempts`);
   };
 
   const stopConversation = useCallback(async () => {
@@ -147,7 +174,7 @@ const SpeakingPractice: React.FC<{ open: boolean; onClose: () => void }> = ({ op
       setIsStarted(false);
       setIsAnalysing(false);
       setDisplayChatLayout(true);
-    }, 2000);
+    }, 1000);
   }, [conversation]);
 
   const getLabel = () => {
