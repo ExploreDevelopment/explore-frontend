@@ -18,9 +18,9 @@ const Agent: React.FC<IProps> = ({ isStarted, isAnalysing, handleStart, stopConv
       <div className="space-y-4 text-center">
         <h1 className="text-3xl font-bold">Speaking practice</h1>
         <p className="mx-auto max-w-md text-gray-600">
-          You&#39;re interviewing for a junior software developer position. I&#39;ll be your HR interviewer. Let&#39;s
-          go through common questions, from introducing yourself to discussing your skills and past projects. Answer
-          naturally and confidently. Ready to begin?
+          You&#39;re interviewing for a junior QA position. I&#39;ll be your HR interviewer. Let&#39;s go through common
+          questions, from introducing yourself to discussing your skills and past projects. Answer naturally and
+          confidently. Ready to begin?
         </p>
       </div>
 
